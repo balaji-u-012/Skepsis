@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skepsis — Multi-Agent Research Discovery</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="masthead__mark">§</div>
+    <div>
+      <h1 class="masthead__title">Skepsis</h1>
+      <p class="masthead__tagline">Five agents read the literature so you can read the findings.</p>
+    </div>
+    <div class="masthead__status" id="llmStatus" title="Whether an LLM key is configured on the backend">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">checking backend&hellip;</span>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="search-panel" aria-label="Search">
+    <form id="searchForm" class="search-form">
+      <label class="field field--grow">
+        <span class="field__label">Research topic or keyword</span>
+        <input type="text" id="topicInput" name="topic"
+               placeholder="e.g. retrieval-augmented generation for legal QA"
+               autocomplete="off" required />
+      </label>
+      <label class="field field--narrow">
+        <span class="field__label">From year</span>
+        <input type="number" id="yearFrom" name="yearFrom"
+               placeholder="2020" min="1950" max="2100" />
+      </label>
+      <label class="field field--narrow">
+        <span class="field__label">To year</span>
+        <input type="number" id="yearTo" name="yearTo"
+               placeholder="2026" min="1950" max="2100" />
+      </label>
+      <button type="submit" class="btn" id="searchBtn">Search the literature</button>
+    </form>
+    <p class="search-hint">
+      Skepsis queries arXiv, Semantic Scholar, OpenAlex and Crossref, removes duplicates,
+      and ranks by topical relevance and recency to surface the top 5.
+    </p>
+  </section>
+
+  <section id="pipelineStatus" class="pipeline hidden" aria-live="polite">
+    <ol class="pipeline__steps" id="pipelineSteps">
+      <li data-step="discover">Discovery</li>
+      <li data-step="verify">Deduplication</li>
+      <li data-step="rank">Ranking</li>
+      <li data-step="analyze">Paper analysis</li>
+      <li data-step="compare">Comparison</li>
+      <li data-step="gaps">Research gaps</li>
+    </ol>
+  </section>
+
+  <section id="errorBanner" class="error-banner hidden" role="alert" aria-live="assertive"></section>
+
+  <section id="resultsMeta" class="results-meta hidden"></section>
+
+  <section id="paperResults" class="paper-grid" aria-label="Top papers"></section>
+
+  <section id="comparisonSection" class="comparison hidden" aria-label="Comparison">
+    <h2 class="section-title">Side-by-side comparison</h2>
+
+    <div class="table-scroll">
+      <table class="comparison-table" id="comparisonTable"></table>
+    </div>
+
+    <div class="notes-grid">
+      <div class="notes-col">
+        <h3 class="notes-col__title">Similarities</h3>
+        <ul id="similaritiesList" class="notes-list"></ul>
+      </div>
+      <div class="notes-col">
+        <h3 class="notes-col__title">Differences</h3>
+        <ul id="differencesList" class="notes-list"></ul>
+      </div>
+    </div>
+
+    <div class="gaps-box">
+      <h3 class="gaps-box__title">Possible research gaps</h3>
+      <ul id="gapsList" class="notes-list"></ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>
+    Skepsis runs its discovery, deduplication and ranking pipeline without any external
+    model. Paper analysis and the comparison narrative use an LLM only when a key is
+    configured — otherwise they fall back to a plain-text extractor, and every unknown
+    field reads <em>Not reported</em>.
+  </p>
+</footer>
+
+<div class="modal-backdrop hidden" id="detailBackdrop">
+  <div class="modal" id="detailModal" role="dialog" aria-modal="true"
+       aria-labelledby="detailTitle">
+    <button class="modal__close" id="detailClose" aria-label="Close">&times;</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
